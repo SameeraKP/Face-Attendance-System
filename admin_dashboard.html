@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Pending Approvals</h2>
+    <ul>
+        {% for user in pending_users %}
+            <li>{{ user[1] }} - {{ user[2] }} | <a href="{{ url_for('approve_user', student_id=user[0]) }}">Approve</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('logout') }}">Logout</a>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="jumbotron text-center" style="background-color: #e9ecef;">
+            <h1 class="display-4"><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+            {% if user %}
+                <p class="lead">Welcome, <span style="font-weight: bold;">{{ user.name }}</span>!</p>
+            {% else %}
+                <p class="lead">Welcome to the <span style="font-weight: bold;">Face Attendance System</span>!</p>
+            {% endif %}
+            <hr class="my-4">
+            <p>Manage your attendance records efficiently.</p>
+            <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow-lg">
+                    <div class="card-header" style="background-color: #343a40; color: white;">
+                        <h5 class="card-title"><i class="fas fa-list-alt"></i> Attendance Records</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th><i class="fas fa-user"></i> Name</th>
+                                        <th><i class="fas fa-id-card"></i> Roll Number</th>
+                                        <th><i class="fas fa-sign-in-alt"></i> Check-in Time</th>
+                                        <th><i class="fas fa-sign-out-alt"></i> Check-out Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in attendance_records %}
+                                        <tr>
+                                            <td>{{ record[2] }}</td>
+                                            <td>{{ record[3] }}</td>
+                                            <td>{{ record[0] }}</td>
+                                            <td>{{ record[1] }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

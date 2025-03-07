@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>Face Detection</h2>
+        <video id="video" width="640" height="480" autoplay playsinline muted style="border: 1px solid black;"></video>
+        <canvas id="canvas" width="640" height="480" style="display: none;"></canvas>
+        
+        <button id="checkinButton" class="btn btn-primary">Check In</button>
+        <button id="checkoutButton" class="btn btn-secondary">Check Out</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        let socket;
+
+        // Initialize Socket.IO connection
+        function initSocket() {
+            socket = io(); // Connect to the server that served this page
+            
+            socket.on('connect', () => {
+                console.log("Socket.IO connected");
+            });
+
+            socket.on('face_detected', function(data) {
+                if (data.face_detected) {
+                    console.log("Face detected on server side");
+                } else {
+                    console.log("No face detected");
+                }
+            });
+        }
+
+        // Access the camera and start video stream
+        function startCamera() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                        video.srcObject = stream;
+                        video.onloadedmetadata = () => {
+                            video.play();
+                            console.log("Camera stream started");
+                            // Start sending frames to the server for face detection
+                            startFrameProcessing();
+                        };
+                    })
+                    .catch(err => {
+                        console.error("Error accessing camera:", err);
+                        alert("Error accessing camera. Please check permissions.");
+                    });
+            } else {
+                console.log("getUserMedia not supported");
+                alert("getUserMedia not supported on your browser. Please use a modern browser.");
+            }
+        }
+
+        // Process video frames
+        function startFrameProcessing() {
+            setInterval(() => {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+                socket.emit('frame', dataURL);
+            }, 100);
+        }
+
+        // Check-in and Check-out functions
+        function checkIn() {
+            fetch('/checkin')
+                .then(response => response.text())
+                .then(data => alert(data));
+        }
+
+        function checkOut() {
+            fetch('/checkout')
+                .then(response => response.text())
+                .then(data => alert(data));
+        }
+
+        // Event listeners for buttons
+        document.getElementById('checkinButton').addEventListener('click', checkIn);
+        document.getElementById('checkoutButton').addEventListener('click', checkOut);
+
+        // Initialize everything when the page loads
+        window.onload = () => {
+            initSocket();
+            startCamera();
+        };
+    </script>
+{% endblock %}
