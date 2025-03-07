@@ -27,7 +27,6 @@ Technologies Used:
 Flask (Backend)
 OpenCV (Face Detection)
 HTML/CSS/JavaScript (Frontend)
-SQLite/MySQL (Database)
 Future Enhancements
 
 Mobile App Integration.
